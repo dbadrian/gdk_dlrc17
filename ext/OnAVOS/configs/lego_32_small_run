@@ -1,0 +1,47 @@
+{
+"model": "small_lego",
+"task": "eval",
+"dataset": "CUHK03",
+#"data_dir":"/home/dlrc/Documents/class_data_final/",
+"train_folder":"run_data",
+#"train_folder": "class_data",
+"batch_size": 128,
+#"batch_size":32,
+"batch_size_eval": 1024,
+"log_verbosity": 5,
+"gpus": [5],
+"optimizer": "adam",
+"learning_rates": "{1: 0.00001}",
+#"load_init": "/home/dlrc/Documents/class_data_final/code/ilsvrc-cls_rna-a1_cls1000_ep-0001.pickle",
+"freeze_batchnorm": false,
+"save": true,
+"num_epochs": 2000000,
+"augmentors_train": ["gamma", "flip", "scale"],
+"test_cases": ["val_data"],
+"epoch_length": 10000,
+"num_classes": 32,
+"input_size": [64,64],
+# "single", "pair" or "group"
+"batching_mode": "group",
+"pair_ratio": 1.0,
+"group_size": 8,
+# "embedding" or "similarity"
+"validation_mode": "embedding",
+#"small_net":1,
+
+"output_embedding_layer": "outputTriplet",
+"max_saves_to_keep": 40,
+
+"network": {
+  #270x90 #192x64 #64x64
+  "conv0":  {"class": "Conv", "n_features": 64, "activation": "linear"},
+
+  #135x45 #96x32 #32x32
+  "res0":   {"class": "ResidualUnit2", "n_features": 128, "strides": [[2,2], [1,1]], "from": ["conv0"]},
+  "res1":   {"class": "ResidualUnit2",  "from": ["res0"]},
+  "res2":   {"class": "ResidualUnit2",  "from": ["res1"]},
+
+  "outputTriplet": {"class": "FullyConnectedWithTripletLoss", "n_features": 32, "batch_norm": true,  "activation": "linear", "from": ["res2"]}
+}
+
+}

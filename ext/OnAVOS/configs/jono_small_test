@@ -1,0 +1,42 @@
+{
+"davis_data_dir": "custom_dataset/",
+"model": "small",
+"task": "segment",
+"dataset": "DAVIS17",
+"batch_size": 1,
+"batch_size_eval": 1,
+"log_verbosity": 5,
+"gpus": [0],
+#"optimizer": "adam",
+"freeze_batchnorm": true,
+#"save": true,
+#"num_epochs": 20,
+#"small_net":1,
+
+#"split": "dev",
+
+#"n_finetune_steps": 5,
+"learning_rates": "{1: 0.000003}",
+#"save_oneshot": true,
+#"save_logits": true,
+
+#"augmentors_train": ["gamma", "flip"],
+#"resize_mode_train": "random_resize",
+
+#"resize_mode_val": "random_resize",
+#"augmentors_val": ["gamma", "flip"],
+#"n_test_samples": 10,
+
+"network": {
+  "conv0":  {"class": "Conv", "n_features": 64, "activation": "linear"},
+
+  "res0":   {"class": "ResidualUnit2", "n_features": 128, "strides": [[2,2], [1,1]], "from": ["conv0"]},
+  "res1":   {"class": "ResidualUnit2", "from": ["res0"]},
+  "res2":   {"class": "ResidualUnit2", "from": ["res1"]},
+
+  "output": {"class": "SegmentationSoftmax", "loss": "bootstrapped_ce", "fraction": 0.25, "dilation": 12, "filter_size": [3,3],
+             "resize_targets": true, "input_activation": "relu", "from": ["res2"]}
+
+}
+
+}

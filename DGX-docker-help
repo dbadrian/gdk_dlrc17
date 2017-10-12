@@ -1,0 +1,41 @@
+
+# Start the base nvidia docker image
+nvidia-docker run -v=/home/dlrc-gdk/:/tmp -it 4ca1d30fcd9b bash
+
+# update system and install dependencies if necessary
+apt-get update
+apt-get install git nano
+apt-get install libsm6 libxrender1 libfontconfig1
+
+# create a non-root use
+useradd -ms /bin/bash netseg
+su netseg
+cd
+
+# install anaconda as python env
+curl https://repo.continuum.io/archive/Anaconda3-5.0.0.1-Linux-x86_64.sh > anaconda.sh
+bash anaconda.sh -b -p $HOME/anaconda
+
+# alternatively append this to bashrc otherwise rerun everytime on next startup
+export PATH="$HOME/anaconda/bin:$PATH"
+pip install --upgrade tensorflow-gpu
+pip install numpy
+pip install sklearn
+pip install scikit-image
+pip install opencv-python
+
+# clone your source code
+cd
+git clone https://github.com/dbadrian/dlrc17-gdk.git
+
+cd ./dlrc17-gdk/
+git fetch
+git checkout feature/TripletClassification
+git pull
+
+mkdir ./ext/OnAVOS/logs
+mkdir ./ext/OnAVOS/models
+
+# run code
+python3 network_segmenter.py -n net_seg
+
